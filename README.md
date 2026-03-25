@@ -11,26 +11,27 @@ This project demonstrates how different Large Language Model (LLM) APIs can be a
 ## 📁 Project Structure
 
 ```
-ai-api-integration/
+genai-api-assignment/
 │
-├── groq_client.py           # Groq (LLaMA 3 - high speed inference)
-├── ollama_local.py          # Ollama (local LLM execution)
-├── hf_client.py             # Hugging Face (open-source models)
-├── gemini_client.py         # Google Gemini (fast + multimodal)
-├── cohere_client.py         # Cohere (command-based models)
+├── cohere_example.py        # Cohere API integration
+├── gemini_example.py        # Google Gemini API
+├── groq_example.py          # Groq (LLaMA models)
+├── huggingface_example.py   # Hugging Face API
+├── ollama_example.py        # Local LLM using Ollama
 │
-├── multi_llm_router.py      # Unified interface (model selection + routing)
+├── multi_api_query.py       # Unified multi-model router
 │
 ├── requirements.txt         # Dependencies
-├── .env                     # API keys (excluded from version control)
-├── .gitignore               # Prevents sensitive data leaks
+├── README.md                # Project documentation
+├── .env                     # API keys (not uploaded)
+├── .gitignore               # Ignore sensitive files
 │
 └── screenshots/
-    ├── groq.png
-    ├── ollama.png
-    ├── huggingface.png
-    ├── gemini.png
     ├── cohere.png
+    ├── gemini.png
+    ├── groq.png
+    ├── hugging_face.png
+    ├── llama.png
     └── multi.png
 ```
 
@@ -41,8 +42,8 @@ ai-api-integration/
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone <your-repository-url>
-cd ai-api-integration
+git clone <your-repo-url>
+cd genai-api-assignment
 ```
 
 ---
@@ -53,13 +54,13 @@ cd ai-api-integration
 python -m venv venv
 
 # Activate:
-source venv/bin/activate        # macOS / Linux
 venv\Scripts\activate           # Windows
+source venv/bin/activate        # macOS / Linux
 ```
 
 ---
 
-### 3️⃣ Install Required Libraries
+### 3️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -67,9 +68,9 @@ pip install -r requirements.txt
 
 ---
 
-### 4️⃣ Configure Environment Variables
+### 4️⃣ Add API Keys
 
-Create a `.env` file and add your API keys:
+Create a `.env` file:
 
 ```
 GROQ_API_KEY=your_groq_key
@@ -78,121 +79,120 @@ GOOGLE_API_KEY=your_google_key
 COHERE_API_KEY=your_cohere_key
 ```
 
-⚠️ **Important:**
-Never upload `.env` to GitHub. It is already included in `.gitignore`.
+⚠️ Never upload `.env` to GitHub.
 
 ---
 
 ## 🔑 API Key Sources
 
-| Provider      | Link                                     | Free Tier |
-| ------------- | ---------------------------------------- | --------- |
-| Groq          | https://console.groq.com/                | ✅ Yes     |
-| Hugging Face  | https://huggingface.co/settings/tokens   | ✅ Yes     |
-| Google Gemini | https://makersuite.google.com/app/apikey | ✅ Yes     |
-| Cohere        | https://dashboard.cohere.com/            | ✅ Yes     |
-| Ollama        | Local installation (https://ollama.ai/)  | ✅ Free    |
+| Provider     | Link                                     | Free Tier |
+| ------------ | ---------------------------------------- | --------- |
+| Groq         | https://console.groq.com/                | ✅ Yes     |
+| Hugging Face | https://huggingface.co/settings/tokens   | ✅ Yes     |
+| Gemini       | https://makersuite.google.com/app/apikey | ✅ Yes     |
+| Cohere       | https://dashboard.cohere.com/            | ✅ Yes     |
+| Ollama       | https://ollama.ai/                       | ✅ Free    |
 
 ---
 
-## ▶️ Usage Guide
+## ▶️ How to Run
 
-### 🔹 Groq (Ultra-fast inference)
+### 🔹 Groq
 
 ```bash
-python groq_client.py
+python groq_example.py
 ```
 
 ---
 
-### 🔹 Ollama (Local LLM Execution)
+### 🔹 Ollama (Local Model)
 
 ```bash
-ollama pull llama3
-python ollama_local.py
+ollama pull tinyllama
+python ollama_example.py
 ```
 
-✔ Runs fully offline after model download
+✔ Runs locally (offline after download)
 
 ---
 
-### 🔹 Hugging Face (Open Models)
+### 🔹 Hugging Face
 
 ```bash
-python hf_client.py
+python huggingface_example.py
 ```
 
-⏳ First response may be slow due to cold start
+⏳ First run may be slow (cold start)
 
 ---
 
 ### 🔹 Google Gemini
 
 ```bash
-python gemini_client.py
+python gemini_example.py
 ```
 
-⚡ Optimized for speed and efficiency
+⚡ Fast and efficient responses
 
 ---
 
 ### 🔹 Cohere
 
 ```bash
-python cohere_client.py
+python cohere_example.py
 ```
 
-🧠 Strong performance for conversational tasks
+🧠 Strong for conversational tasks
 
 ---
 
-### 🔹 Unified Multi-Model Interface
+### 🔹 Multi-Model System
 
 ```bash
-python multi_llm_router.py
+python multi_api_query.py
 ```
 
 Features:
 
-* Select any provider dynamically
-* Auto-routing based on input
-* Compare multiple model outputs
+* Select any model
+* Auto mode (smart routing)
+* Compare outputs
 
 ---
 
 ## 🧠 Key Features
 
-* 🔄 **Multi-LLM Integration** (5 providers in one system)
-* ⚙️ **Modular Architecture** (easy to extend)
-* 🔐 **Secure API Handling** via `.env`
-* 🌐 **Cloud + Local AI Support**
-* 🤖 **Smart Routing Logic**
-* 🧪 **Side-by-side Model Comparison**
+* 🔄 Multi-LLM Integration (5 providers)
+* ⚙️ Modular and clean architecture
+* 🔐 Secure API key handling
+* 🌐 Cloud + Local AI support
+* 🤖 Smart routing system
+* 🧪 Multi-model comparison
 
 ---
 
 ## 📊 Observations
 
-* ⚡ Groq delivers fastest responses
-* 🧠 Gemini provides balanced performance
-* 💻 Ollama enables offline AI usage
-* 🕒 Hugging Face may have cold-start latency
-* 🎯 Cohere performs well in structured tasks
+* ⚡ Groq → fastest responses
+* 🧠 Gemini → balanced performance
+* 💻 Ollama → offline AI
+* 🕒 Hugging Face → slower first response
+* 🎯 Cohere → structured outputs
 
 ---
 
 ## ⚠️ Notes
 
-* Ensure all API keys are valid before running scripts
-* Ollama must be running locally before execution
-* Internet is required for all cloud-based APIs
-* Free tiers may have usage limits
+* Ensure API keys are valid
+* Ollama must be running locally
+* Internet required for cloud APIs
+* Free tiers may have limits
 
 ---
 
 ## 🎯 Conclusion
 
-This project showcases how multiple AI services can be combined into a **single intelligent system**, enabling flexibility, performance comparison, and efficient usage of different LLM providers.
+This project demonstrates how multiple AI providers can be integrated into a **single intelligent system**, enabling flexibility, scalability, and performance comparison.
 
 ---
 
