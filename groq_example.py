@@ -49,7 +49,7 @@ def fetch_chat_response(client, user_query):
 def start_chat():
     """Main CLI interaction."""
     print("=" * 50)
-    print("   Gemini Chat Interface")
+    print("   Groqgit add Chat Interface")
     print("=" * 50)
 
     user_input = input("\nAsk your question: ").strip()
