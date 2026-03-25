@@ -1,30 +1,33 @@
-# gemini_example_updated.py
-# Uses NEW Google GenAI SDK (google-genai)
+# gemini_chat_interface.py
+# Refactored version using Google GenAI SDK
 
 import os
 from dotenv import load_dotenv
 from google import genai
 
-# Load API keys from .env file
-load_dotenv()
 
-api_key = os.getenv("GOOGLE_API_KEY")
+def fetch_api_key():
+    """Retrieve API key from environment variables."""
+    load_dotenv()
+    key = os.getenv("GOOGLE_API_KEY")
 
-if not api_key:
-    raise ValueError("GOOGLE_API_KEY not found. Please set it in your .env file.")
+    if not key:
+        raise RuntimeError("GOOGLE_API_KEY is missing. Add it to your .env file.")
+    
+    return key
 
-# Create client
-client = genai.Client(api_key=api_key)
+
+def create_genai_client(key):
+    """Initialize Gemini client."""
+    return genai.Client(api_key=key)
 
 
-def query_gemini(prompt: str) -> str:
-    """
-    Send a prompt to Google Gemini and return the response.
-    """
+def generate_reply(client, query):
+    """Generate response from Gemini model."""
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash", 
-            contents=prompt,
+        result = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=query,
             config={
                 "temperature": 0.7,
                 "top_p": 0.9,
@@ -32,37 +35,47 @@ def query_gemini(prompt: str) -> str:
             }
         )
 
-        return response.text if response.text else "No response generated."
+        return result.text or "⚠️ Empty response received."
 
-    except Exception as e:
-        error_msg = str(e)
+    except Exception as err:
+        message = str(err).lower()
 
-        if "API_KEY_INVALID" in error_msg:
-            return "Invalid API key. Check your GOOGLE_API_KEY."
+        if "api_key_invalid" in message:
+            return "❌ Invalid API key. Please verify your credentials."
 
-        if "quota" in error_msg.lower():
-            return "API quota exceeded. Try again later."
+        elif "quota" in message:
+            return "⚠️ API usage limit reached. Try later."
 
-        if "not found" in error_msg.lower():
-            return "Model not available. Try 'gemini-1.5-pro'."
+        elif "not found" in message:
+            return "⚠️ Model unavailable. Consider using 'gemini-1.5-pro'."
 
-        return f"Error talking to Gemini: {error_msg}"
+        return f"Unexpected error: {err}"
 
 
-# ── Main ─────────────────────────────────────────────────────────────
+def run_chat():
+    """Main execution flow."""
+    print("=" * 50)
+    print("   Gemini AI Console")
+    print("=" * 50)
+
+    user_input = input("\nAsk something: ").strip()
+
+    if not user_input:
+        print("⚠️ No input provided. Please try again.")
+        return
+
+    print("\nGenerating response...\n")
+
+    api_key = fetch_api_key()
+    gemini_client = create_genai_client(api_key)
+
+    output = generate_reply(gemini_client, user_input)
+
+    print("Result:")
+    print("-" * 40)
+    print(output)
+    print("-" * 40)
+
+
 if __name__ == "__main__":
-    print("=" * 50)
-    print("  Google Gemini — Generative AI (Updated SDK)")
-    print("=" * 50)
-
-    user_prompt = input("\nEnter your prompt: ").strip()
-
-    if not user_prompt:
-        print("No prompt entered. Exiting.")
-    else:
-        print("\nQuerying Gemini...\n")
-        response = query_gemini(user_prompt)
-        print("Response:")
-        print("-" * 40)
-        print(response)
-        print("-" * 40)
+    run_chat()

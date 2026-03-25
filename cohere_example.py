@@ -3,47 +3,61 @@ from dotenv import load_dotenv
 import cohere
 
 
-load_dotenv()
-api_key = os.getenv("COHERE_API_KEY")
+def load_api_key():
+    """Load API key from environment variables."""
+    load_dotenv()
+    key = os.getenv("COHERE_API_KEY")
 
-if not api_key:
-    raise ValueError("COHERE_API_KEY not found in .env file.")
+    if not key:
+        raise RuntimeError("Missing COHERE_API_KEY in environment file.")
+    
+    return key
 
 
-co = cohere.ClientV2(api_key)
+def initialize_client(api_key):
+    """Create Cohere client instance."""
+    return cohere.ClientV2(api_key)
 
 
-def query_cohere(prompt: str) -> str:
+def get_response(client, user_input):
+    """Send prompt to Cohere and return response."""
     try:
-        response = co.chat(
-            model="command-a-03-2025",  
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
+        result = client.chat(
+            model="command-a-03-2025",
+            messages=[{"role": "user", "content": user_input}],
             temperature=0.7,
             max_tokens=500
         )
 
-        return response.message.content[0].text.strip()
+        return result.message.content[0].text.strip()
 
-    except Exception as e:
-        return f"Error: {str(e)}"
+    except Exception as error:
+        return f"Request failed: {error}"
 
+
+def main():
+    print("=" * 50)
+    print("   Cohere AI Chat Interface")
+    print("=" * 50)
+
+    prompt_text = input("\nType your query: ").strip()
+
+    if not prompt_text:
+        print("⚠️ Please enter a valid prompt.")
+        return
+
+    print("\nProcessing request...\n")
+
+    api_key = load_api_key()
+    client = initialize_client(api_key)
+
+    reply = get_response(client, prompt_text)
+
+    print("Output:")
+    print("-" * 40)
+    print(reply)
+    print("-" * 40)
 
 
 if __name__ == "__main__":
-    print("=" * 50)
-    print("  Cohere — Chat")
-    print("=" * 50)
-
-    user_prompt = input("\nEnter your prompt: ").strip()
-
-    if not user_prompt:
-        print("No prompt entered.")
-    else:
-        print("\nQuerying Cohere...\n")
-        response = query_cohere(user_prompt)
-        print("Response:")
-        print("-" * 40)
-        print(response)
-        print("-" * 40)
+    main()

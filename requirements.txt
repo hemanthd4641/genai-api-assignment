@@ -1,12 +1,28 @@
-# requirements.txt
-# Install everything with:  pip install -r requirements.txt
+# 📦 requirements.txt
 
-streamlit>=1.35.0
-groq>=0.9.0
+# Install all dependencies using:
+
+# pip install -r requirements.txt
+
+# ── Core Libraries ─────────────────────────────
+
 requests>=2.31.0
-google-generativeai>=0.7.0
-cohere>=5.0.0
 python-dotenv>=1.0.0
 
-# Ollama uses the local REST API — no extra package needed (just requests)
-# OpenAI is intentionally excluded from this project
+# ── AI Provider SDKs ───────────────────────────
+
+groq>=0.9.0                  # Groq API (LLaMA models - high speed)
+google-generativeai>=0.7.0   # Google Gemini SDK
+cohere>=5.0.0                # Cohere API (Command models)
+
+# ── UI / Optional Interface ────────────────────
+
+streamlit>=1.35.0            # For web-based UI (optional)
+
+# ── Notes ─────────────────────────────────────
+
+# Ollama runs locally via REST API → no separate package required
+
+# (uses 'requests' internally)
+
+# OpenAI SDK is intentionally excluded for this project scope

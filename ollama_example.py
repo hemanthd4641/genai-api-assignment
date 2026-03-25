@@ -1,62 +1,89 @@
-# Simple local AI chat using a tiny model (fast + low RAM)
+# local_llm_chat.py
+# Lightweight local AI chat using Ollama API
 
 import requests
 
-# Ollama runs locally
-OLLAMA_URL = "http://localhost:11434"
+BASE_URL = "http://localhost:11434"
+DEFAULT_MODEL = "tinyllama"
 
 
-MODEL = "tinyllama"   
+# ── API FUNCTIONS ─────────────────────────────────────
+def fetch_available_models():
+    """Retrieve list of installed Ollama models."""
+    try:
+        response = requests.get(f"{BASE_URL}/api/tags", timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return [item["name"] for item in data.get("models", [])]
+
+    except Exception:
+        return []
 
 
-def chat(prompt):
-    """Send prompt to local Ollama model and get response"""
-    
-    url = f"{OLLAMA_URL}/api/generate"
-    
-    data = {
-        "model": MODEL,
-        "prompt": prompt,
-        "stream": False,  
+def generate_response(prompt_text, model_name):
+    """Send prompt to Ollama model and return generated output."""
+    endpoint = f"{BASE_URL}/api/generate"
+
+    payload = {
+        "model": model_name,
+        "prompt": prompt_text,
+        "stream": False,
         "options": {
             "temperature": 0.7,
-            "num_predict": 200  
+            "num_predict": 200
         }
     }
 
     try:
-        res = requests.post(url, json=data, timeout=60)
+        res = requests.post(endpoint, json=payload, timeout=60)
         res.raise_for_status()
-        return res.json().get("response", "No response")
+        return res.json().get("response", "").strip() or "⚠️ Empty reply"
 
-    except Exception as e:
-        return f"Error: {e}"
+    except requests.exceptions.Timeout:
+        return "⚠️ Request timed out. Try again."
 
+    except requests.exceptions.ConnectionError:
+        return "❌ Cannot connect to Ollama. Is it running?"
 
-def show_models():
-    """Show all pulled models"""
-    try:
-        res = requests.get(f"{OLLAMA_URL}/api/tags")
-        models = res.json().get("models", [])
-        return [m["name"] for m in models]
-    except:
-        return []
+    except Exception as err:
+        return f"Unexpected error: {err}"
 
 
-# ── MAIN ─────────────────────────────
-if __name__ == "__main__":
-    print("\n🧠 Local AI Chat (Lightweight Mode)")
-    
-    models = show_models()
-    print(f"\nAvailable models: {models if models else 'None'}")
-    print(f"Using model: {MODEL}\n")
+# ── CLI LOOP ──────────────────────────────────────────
+def start_local_chat():
+    print("\n" + "=" * 50)
+    print("   Local LLM Chat (Ollama)")
+    print("=" * 50)
+
+    models = fetch_available_models()
+
+    if models:
+        print(f"\nAvailable Models: {models}")
+    else:
+        print("\n⚠️ No models found. Run: ollama pull tinyllama")
+
+    model = DEFAULT_MODEL
+    print(f"Active Model: {model}\n")
 
     while True:
-        user = input("You: ")
+        user_input = input("You: ").strip()
 
-        if user.lower() in ["exit", "quit"]:
-            print("Exiting...")
+        if user_input.lower() in {"exit", "quit"}:
+            print("👋 Session ended.")
             break
 
-        reply = chat(user)
-        print(f"\nAI: {reply}\n")
+        if not user_input:
+            print("⚠️ Please enter a prompt.")
+            continue
+
+        print("\nThinking...\n")
+
+        output = generate_response(user_input, model)
+
+        print("AI:", output)
+        print("-" * 40)
+
+
+# ── ENTRY POINT ───────────────────────────────────────
+if __name__ == "__main__":
+    start_local_chat()
